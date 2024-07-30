@@ -1,5 +1,6 @@
 import enum
 from sqlalchemy import Column, String, BigInteger, Enum, Boolean
+from sqlalchemy.orm import relationship
 
 from ..models.base import PkBase
 
@@ -18,3 +19,5 @@ class Profile(PkBase):
     role = Column(Enum(RoleEnum), default="user")
     visible = Column(Boolean, default=False)
     avatar = Column(String(2048))
+
+    lessons = relationship("Lesson", back_populates="user")
