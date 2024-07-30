@@ -1,0 +1,21 @@
+# Telegram bot framework
+aiogram==3.10.0
+
+# FastAPI
+fastapi==0.111.1
+pydantic==2.8.2
+pydantic-settings==2.4.0
+
+# FastAPI and Aiogram integration
+aiogram-fastapi-server==0.1.2
+
+# Uvincorn
+uvicorn==0.30.3
+
+# database
+fastapi-async-sqlalchemy==0.6.1
+asyncpg==0.29.0
+alembic==1.13.2
+
+greenlet==3.0.3
+typing-extensions==4.12.2
