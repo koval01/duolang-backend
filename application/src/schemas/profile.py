@@ -7,14 +7,12 @@ from pydantic import BaseModel
 
 class ProfileItemUpdate(BaseModel):
     displayName: Optional[str] = None
-    description: Optional[str] = None
-    visible: Optional[bool] = False
+    visible: Optional[bool] = None
 
 
 class ProfileItem(ProfileItemUpdate):
     id: UUID
     createdAt: datetime
-    telegram: Optional[int] = None
     role: Optional[Literal["user", "admin"]] = "user"
     avatar: Optional[str] = None
 
