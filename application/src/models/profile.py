@@ -2,7 +2,7 @@ import enum
 from sqlalchemy import Column, String, BigInteger, Enum, Boolean
 from sqlalchemy.orm import relationship
 
-from ..models.base import PkBase
+from application.src.models.base import PkBase
 
 
 class RoleEnum(enum.Enum):

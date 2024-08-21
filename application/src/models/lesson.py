@@ -1,68 +1,76 @@
 import enum
-from typing import Union, List, Dict
-
-from pydantic import BaseModel, field_validator, ValidationError
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy import Column, Enum, ForeignKey, event
-from sqlalchemy.dialects.postgresql import JSON
-from sqlalchemy.orm import relationship
-
-from ..models.base import PkBase
+from typing import Union, List, Dict, Optional
+from pydantic import BaseModel, field_validator
 
 
-class StudiedLanguageEnum(enum.Enum):
-    en = "en"
-    de = "de"
+class TaskTypeEnum(str, enum.Enum):
+    translation = "translation"
+    fill_in = "fill-in"
+    multiple_choice = "multiple-choice"
+    matching = "matching"
+    rearrange = "rearrange"
 
 
-class InterfaceLanguageEnum(enum.Enum):
-    ru = "ru"
-    uk = "uk"
+class TranslationTask(BaseModel):
+    type: TaskTypeEnum = TaskTypeEnum.translation
+    question: str
+    direction: str
+    context: Optional[str]
+    options: List[str]
+    answer: int
+    level: str
+
+
+class FillInTask(BaseModel):
+    type: TaskTypeEnum = TaskTypeEnum.fill_in
+    question: str
+    options: List[str]
+    answer: int
+    level: str
+
+
+class MultipleChoiceTask(BaseModel):
+    type: TaskTypeEnum = TaskTypeEnum.multiple_choice
+    question: str
+    options: List[str]
+    answer: int
+    level: str
+
+
+class MatchingTask(BaseModel):
+    type: TaskTypeEnum = TaskTypeEnum.matching
+    question: str
+    pairs: List[Dict[str, str]]
+    level: str
+
+
+class RearrangeTask(BaseModel):
+    type: TaskTypeEnum = TaskTypeEnum.rearrange
+    question: str
+    sentence: str
+    words: List[str]
+    level: str
 
 
 class Task(BaseModel):
-    type: str
-    sentence: str
-    options: Union[List[str], None] = None
-    correct_answer: Union[str, Dict[str, str]]
-    user_answer: Union[str, Dict[str, str]]
+    task: Union[TranslationTask, FillInTask, MultipleChoiceTask, MatchingTask, RearrangeTask]
 
-    @field_validator('type')
-    def type_must_be_valid(cls, v):
-        if v not in [
-            'fill_in_the_blank',
-            'translate_to_russian',
-            'form_question',
-            'match_words',
-            'negate_sentence',
-            'choose_correct_article',
-            'translate_to_german',
-            'form_sentence'
-        ]:
-            raise ValueError('Invalid task type')
-        return v
+    @field_validator('task', mode='before')
+    def validate_task(cls, v):
+        match v.get('type'):
+            case TaskTypeEnum.translation:
+                return TranslationTask(**v)
+            case TaskTypeEnum.fill_in:
+                return FillInTask(**v)
+            case TaskTypeEnum.multiple_choice:
+                return MultipleChoiceTask(**v)
+            case TaskTypeEnum.matching:
+                return MatchingTask(**v)
+            case TaskTypeEnum.rearrange:
+                return RearrangeTask(**v)
+            case _:
+                raise ValueError(f"Unsupported task type: {v.get('type')}")
 
 
-class Lesson(PkBase):
-    """Lesson model"""
-    __tablename__ = 'lesson'
-
-    user_id = Column(UUID(as_uuid=True), ForeignKey('profile.id'), nullable=False)
-    language_studied = Column(Enum(StudiedLanguageEnum), nullable=False)
-    interface_language = Column(Enum(InterfaceLanguageEnum), nullable=False)
-    tasks = Column(JSON, nullable=False)
-
-    user = relationship("Profile", back_populates="lessons")
-
-
-def validate_tasks(_, __, target):
-    tasks = target.tasks
-    try:
-        [Task(**task) for task in tasks]
-    except ValidationError as e:
-        raise ValueError(f"Task validation error: {e}")
-
-
-# Attach the validation listener to the Lesson model
-event.listen(Lesson, 'before_insert', validate_tasks)
-event.listen(Lesson, 'before_update', validate_tasks)
+class Lesson(BaseModel):
+    tasks: List[Task]
