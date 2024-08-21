@@ -1,8 +1,8 @@
 from aiogram import Bot
 from aiogram.client.default import DefaultBotProperties
 
-from ..bot import start
-from ..config import settings
+from application.src.bot import start
+from application.src.config import settings
 
 
 # Bot initialization

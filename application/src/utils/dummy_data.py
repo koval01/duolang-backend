@@ -1,7 +1,7 @@
 from sqlalchemy import text
 from fastapi_async_sqlalchemy import db
 
-from ..models.profile import Profile
+from application.src.models.profile import Profile
 
 
 async def create_dummy_data():

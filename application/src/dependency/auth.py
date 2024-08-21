@@ -1,7 +1,7 @@
 from fastapi import Request, HTTPException
 from aiogram.utils.web_app import safe_parse_webapp_init_data
 
-from ..config import settings
+from application.src.config import settings
 
 
 async def auth_dependency(request: Request):

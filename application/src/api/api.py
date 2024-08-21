@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
-from ..api.endpoints import profile
-from ..dependency.auth import auth_dependency
+from application.src.api.endpoints import profile
+from application.src.dependency.auth import auth_dependency
 
 api_router = APIRouter()
 

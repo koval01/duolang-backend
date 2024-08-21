@@ -3,10 +3,12 @@ import logging
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+from fastapi_async_sqlalchemy import SQLAlchemyMiddleware
+
 from aiogram_fastapi_server import SimpleRequestHandler, setup_application
 from aiogram import Bot, Dispatcher
 from aiogram.types import MenuButtonWebApp, WebAppInfo
-from fastapi_async_sqlalchemy import SQLAlchemyMiddleware
 
 from .config import settings
 from .bot import bot, bot_routers

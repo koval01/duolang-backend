@@ -7,8 +7,8 @@ from pydantic import ValidationError
 
 from sqlalchemy import select, update
 
-from .....models.profile import Profile
-from .....schemas.profile import ProfileItemUpdate, ProfileItemDisplay
+from application.src.models.profile import Profile
+from application.src.schemas.profile import ProfileItemUpdate, ProfileItemDisplay
 
 router = APIRouter()
 

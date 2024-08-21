@@ -5,8 +5,8 @@ from fastapi_async_sqlalchemy import db
 
 from sqlalchemy import select
 
-from ....models.profile import Profile
-from ....schemas.profile import ProfileItemInit
+from application.src.models.profile import Profile
+from application.src.schemas.profile import ProfileItemInit
 
 router = APIRouter()
 

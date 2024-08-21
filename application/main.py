@@ -1,7 +1,7 @@
 import uvicorn
 
-from .src.app import create_app
-# from src.utils.dummy_data import create_dummy_data
+from application.src.app import create_app
+# from application.src.utils.dummy_data import create_dummy_data
 
 app = create_app()
 
@@ -13,4 +13,5 @@ async def startup():
     pass
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=8000)
+    app_port = 8000
+    uvicorn.run(app, host="localhost", port=app_port)
