@@ -6,7 +6,8 @@ from typing import Literal, Optional
 
 import google.generativeai as genai
 from application.src.config import settings
-from application.src.models import Prompt, Lesson
+from application.src.models import Lesson
+from application.src.schemas import Prompt
 
 
 class Gemini:
