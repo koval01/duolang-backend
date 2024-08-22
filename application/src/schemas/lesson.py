@@ -159,18 +159,19 @@ class Task(RootModel):
     @classmethod
     def validate_task(cls, v):
         task_type = v.get('type')
-        if task_type == TaskTypeEnum.translation:
-            return TranslationTask(**v)
-        elif task_type == TaskTypeEnum.fill_in:
-            return FillInTask(**v)
-        elif task_type == TaskTypeEnum.multiple_choice:
-            return MultipleChoiceTask(**v)
-        elif task_type == TaskTypeEnum.matching:
-            return MatchingTask(**v)
-        elif task_type == TaskTypeEnum.rearrange:
-            return RearrangeTask(**v)
-        else:
-            raise ValueError(f"Unsupported task type: {task_type}")
+        match task_type:
+            case TaskTypeEnum.translation:
+                return TranslationTask(**v)
+            case TaskTypeEnum.fill_in:
+                return FillInTask(**v)
+            case TaskTypeEnum.multiple_choice:
+                return MultipleChoiceTask(**v)
+            case TaskTypeEnum.matching:
+                return MatchingTask(**v)
+            case TaskTypeEnum.rearrange:
+                return RearrangeTask(**v)
+            case _:
+                raise ValueError(f"Unsupported task type: {task_type}")
 
 
 class Lesson(BaseModel):
