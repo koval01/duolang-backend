@@ -1,9 +1,10 @@
 import enum
 
-from sqlalchemy import Column, String, Boolean, ForeignKey, Float, JSON, Enum
+from sqlalchemy import Column, String, Boolean, ForeignKey, Float, Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.dialects.postgresql import UUID
+
 from .base import PkBase
 
 
@@ -20,21 +21,18 @@ class Lesson(PkBase):
     __tablename__ = 'lesson'
 
     user_id = Column(UUID(as_uuid=True), ForeignKey('profile.id'), nullable=False)
-    tasks = Column(JSON, nullable=False)  # Storing tasks as a JSON column
     score = Column(Float, default=0.0)  # Total score for the lesson
 
     user = relationship("Profile", back_populates="lessons")
+    tasks = relationship("Task", back_populates="lesson")  # Define relationship here
 
     @hybrid_property
     def grade(self):
-        # Ensure tasks are loaded as a Python list from the actual instance
-        tasks = self.tasks if isinstance(self.tasks, list) else []
-
-        if not tasks:
+        if not self.tasks:
             return 0.0
 
-        correct_tasks = sum(1 for task in tasks if task.get('result'))
-        return correct_tasks / len(tasks) * 100
+        correct_tasks = sum(1 for task in self.tasks if task.correct)
+        return correct_tasks / len(self.tasks) * 100
 
     def calculate_grade(self):
         """Calculate and update the lesson grade."""

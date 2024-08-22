@@ -162,3 +162,5 @@ cython_debug/
 
 db.sqlite
 
+# migrations
+migrations/versions/*.py
