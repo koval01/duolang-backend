@@ -3,8 +3,8 @@ from fastapi import APIRouter, Request
 from fastapi_async_sqlalchemy import db
 from sqlalchemy import delete
 
-from application.src.models.profile import Profile
-from application.src.schemas.misc import ResultBody
+from application.src.models import Profile
+from application.src.schemas import ResultBody
 
 router = APIRouter()
 

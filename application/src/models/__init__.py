@@ -1,2 +1,3 @@
-from application.src.models.profile import Profile
-from application.src.models.lesson import Lesson
+from .profile import Profile
+from .lesson import Lesson
+from .base import PkBase

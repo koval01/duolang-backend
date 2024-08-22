@@ -2,7 +2,7 @@ import enum
 from sqlalchemy import Column, String, BigInteger, Enum, Boolean
 from sqlalchemy.orm import relationship
 
-from application.src.models.base import PkBase
+from .base import PkBase
 
 
 class RoleEnum(enum.Enum):
@@ -16,7 +16,7 @@ class Profile(PkBase):
 
     displayName = Column(String(255), nullable=False)
     telegram = Column(BigInteger, nullable=False)
-    role = Column(Enum(RoleEnum), default="user")
+    role = Column(Enum(RoleEnum), default=RoleEnum.user)
     visible = Column(Boolean, default=False)
     avatar = Column(String(2048))
 

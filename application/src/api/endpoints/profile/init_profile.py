@@ -6,8 +6,8 @@ from fastapi_async_sqlalchemy import db
 from pydantic import ValidationError, BaseModel
 from sqlalchemy import select
 
-from application.src.models.profile import Profile
-from application.src.schemas.profile import ProfileItemCreate, ProfileItemInit
+from application.src.models import Profile
+from application.src.schemas import ProfileItemCreate, ProfileItemInit
 
 router = APIRouter()
 
