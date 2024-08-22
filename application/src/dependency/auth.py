@@ -1,12 +1,13 @@
-from fastapi import Request, HTTPException
+from fastapi import Request, HTTPException, Header
 from aiogram.utils.web_app import safe_parse_webapp_init_data
 
 from application.src.config import settings
 
 
-async def auth_dependency(request: Request):
-    init_data = request.headers.get("X-InitData")
-
+async def auth_dependency(
+    request: Request,
+    init_data: str = Header(..., alias="X-InitData")
+):
     if not init_data:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
