@@ -17,6 +17,8 @@ class DevSettings(BaseSettings):
     SQLALCHEMY_DATABASE_URI: str
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
 
+    GEMINI_API_KEY: str
+
     # Environment
     model_config = SettingsConfigDict(
         env_file=os.path.join(BASE_DIR, ".env"),

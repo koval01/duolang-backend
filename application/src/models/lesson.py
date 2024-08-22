@@ -1,6 +1,6 @@
 import enum
 from typing import Union, List, Dict, Optional
-from pydantic import BaseModel, field_validator, model_validator
+from pydantic import BaseModel, field_validator, model_validator, RootModel
 
 
 class TaskTypeEnum(str, enum.Enum):
@@ -22,7 +22,7 @@ class TranslationTask(BaseModel):
 
     @field_validator('direction')
     def validate_direction(cls, v):
-        allowed_directions = ["de-ru", "ru-de", "en-ru", "ru-en", "fr-ru", "ru-fr", "pl-ua", "ua-pl"]
+        allowed_directions = ["de-ru"]
         if v not in allowed_directions:
             raise ValueError(f"Invalid direction: {v}. Allowed values are: {allowed_directions}")
         return v
@@ -44,7 +44,8 @@ class TranslationTask(BaseModel):
 
     @field_validator('answer')
     def validate_answer(cls, v, values):
-        if 'options' in values and (v < 0 or v >= len(values['options'])):
+        options = values.data.get('options', [])
+        if (v < 0 or v >= len(options)):
             raise ValueError("Answer index must be within the range of the options list.")
         return v
 
@@ -66,7 +67,8 @@ class FillInTask(BaseModel):
 
     @field_validator('answer')
     def validate_answer(cls, v, values):
-        if 'options' in values and (v < 0 or v >= len(values['options'])):
+        options = values.data.get('options', [])
+        if (v < 0 or v >= len(options)):
             raise ValueError("Answer index must be within the range of the options list.")
         return v
 
@@ -95,7 +97,8 @@ class MultipleChoiceTask(BaseModel):
 
     @field_validator('answer')
     def validate_answer(cls, v, values):
-        if 'options' in values and (v < 0 or v >= len(values['options'])):
+        options = values.data.get('options', [])
+        if (v < 0 or v >= len(options)):
             raise ValueError("Answer index must be within the range of the options list.")
         return v
 
@@ -150,24 +153,24 @@ class RearrangeTask(BaseModel):
         return v
 
 
-class Task(BaseModel):
-    task: Union[TranslationTask, FillInTask, MultipleChoiceTask, MatchingTask, RearrangeTask]
+class Task(RootModel):
+    root: Union[TranslationTask, FillInTask, MultipleChoiceTask, MatchingTask, RearrangeTask]
 
-    @field_validator('task', mode='before')
+    @classmethod
     def validate_task(cls, v):
-        match v.get('type'):
-            case TaskTypeEnum.translation:
-                return TranslationTask(**v)
-            case TaskTypeEnum.fill_in:
-                return FillInTask(**v)
-            case TaskTypeEnum.multiple_choice:
-                return MultipleChoiceTask(**v)
-            case TaskTypeEnum.matching:
-                return MatchingTask(**v)
-            case TaskTypeEnum.rearrange:
-                return RearrangeTask(**v)
-            case _:
-                raise ValueError(f"Unsupported task type: {v.get('type')}")
+        task_type = v.get('type')
+        if task_type == TaskTypeEnum.translation:
+            return TranslationTask(**v)
+        elif task_type == TaskTypeEnum.fill_in:
+            return FillInTask(**v)
+        elif task_type == TaskTypeEnum.multiple_choice:
+            return MultipleChoiceTask(**v)
+        elif task_type == TaskTypeEnum.matching:
+            return MatchingTask(**v)
+        elif task_type == TaskTypeEnum.rearrange:
+            return RearrangeTask(**v)
+        else:
+            raise ValueError(f"Unsupported task type: {task_type}")
 
 
 class Lesson(BaseModel):
