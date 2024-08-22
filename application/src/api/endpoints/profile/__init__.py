@@ -15,4 +15,4 @@ router.include_router(get_profile_status)
 router.include_router(get_profile_by_id)
 
 router.include_router(
-    me_router, prefix="/me", tags=["me"])
+    me_router, prefix="/me", tags=["Me"])

@@ -6,6 +6,6 @@ from .delete_me import router as delete_me
 
 router = APIRouter()
 
-router.include_router(get_me, tags=["me"])
-router.include_router(update_me, tags=["me"])
-router.include_router(delete_me, tags=["me"])
+router.include_router(get_me)
+router.include_router(update_me)
+router.include_router(delete_me)
