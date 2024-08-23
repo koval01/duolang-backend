@@ -11,7 +11,6 @@ class RoleEnum(enum.Enum):
 
 
 class Profile(PkBase):
-    """Profile model"""
     __tablename__ = 'profile'
 
     displayName = Column(String(255), nullable=False)
@@ -20,4 +19,4 @@ class Profile(PkBase):
     visible = Column(Boolean, default=False)
     avatar = Column(String(2048))
 
-    lessons = relationship("Lesson", back_populates="user")
+    lessons = relationship('Lesson', back_populates='profile', cascade='all, delete-orphan')

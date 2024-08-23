@@ -1,55 +1,35 @@
-import enum
-
-from sqlalchemy import Column, String, Integer, ForeignKey, Enum, JSON
+from sqlalchemy import Column, ForeignKey, Integer, Boolean, String, UUID, Text, JSON, Enum
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.hybrid import hybrid_property
 
 from .base import PkBase
-from .profile import Profile
-
-
-class TaskTypeEnum(str, enum.Enum):
-    translation = "translation"
-    fill_in = "fill-in"
-    multiple_choice = "multiple-choice"
-    matching = "matching"
-    rearrange = "rearrange"
+from ..schemas import TaskTypeEnum
 
 
 class Lesson(PkBase):
-    __tablename__ = "lesson"
+    __tablename__ = 'lessons'
 
-    profile_id = Column(ForeignKey('profile.id'), nullable=False)
-    profile = relationship("Profile", back_populates="lessons")
-    tasks = relationship("Task", back_populates="lesson", cascade="all, delete-orphan")
-    result = Column(JSON, nullable=True)  # Stores user's results (e.g., {"task_id": {"correct": True}})
-    total_score = Column(Integer, default=0)
+    profile_id = Column(UUID(as_uuid=True), ForeignKey('profile.id'), nullable=False)
+    course = Column(String(10), nullable=False)
+    tasks = relationship('Task', back_populates='lesson', cascade='all, delete-orphan')
+    completed = Column(Boolean, default=False)
+    score = Column(Integer, default=0)
 
-    @hybrid_property
-    def score(self):
-        return self.total_score
-
-    @score.expression
-    def score(cls):
-        return cls.total_score
-
-    def update_score(self):
-        if self.result:
-            self.total_score = sum([1 for task_result in self.result.values() if task_result["correct"]])
+    profile = relationship('Profile', back_populates='lessons')
 
 
 class Task(PkBase):
-    __tablename__ = "task"
+    __tablename__ = 'tasks'
 
-    lesson_id = Column(ForeignKey('lesson.id'), nullable=False)
-    lesson = relationship("Lesson", back_populates="tasks")
+    lesson_id = Column(UUID(as_uuid=True), ForeignKey('lessons.id'), nullable=False)
     type = Column(Enum(TaskTypeEnum), nullable=False)
-    question = Column(String, nullable=False)
-    options = Column(JSON, nullable=True)  # Stores options for MCQ, fill-in, etc.
-    pairs = Column(JSON, nullable=True)  # Stores matching pairs for matching tasks
-    sentence = Column(String, nullable=True)  # Stores sentence for rearrange task
-    correct_answer = Column(Integer, nullable=True)  # Stores index of correct answer for MCQ, fill-in
-    words = Column(JSON, nullable=True)  # Stores words for rearrange task
+    question = Column(Text, nullable=False)
+    options = Column(JSON, nullable=True)
+    direction = Column(String(5), nullable=True)
+    context = Column(String(256), nullable=True)
+    answer = Column(Integer)
+    pairs = Column(JSON, nullable=True)
+    level = Column(String(5), nullable=False)
+    sentence = Column(Text, nullable=True)
+    words = Column(JSON, nullable=True)
 
-
-Profile.lessons = relationship("Lesson", order_by=Lesson.id, back_populates="profile")
+    lesson = relationship('Lesson', back_populates='tasks')
