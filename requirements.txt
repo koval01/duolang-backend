@@ -2,7 +2,7 @@
 aiogram==3.10.0
 
 # FastAPI
-fastapi==0.111.1
+fastapi[standard]==0.112.1
 pydantic==2.8.2
 pydantic-settings==2.4.0
 
@@ -10,7 +10,7 @@ pydantic-settings==2.4.0
 aiogram-fastapi-server==0.1.2
 
 # Uvincorn
-uvicorn==0.30.3
+uvicorn==0.30.6
 
 # database
 fastapi-async-sqlalchemy==0.6.1
