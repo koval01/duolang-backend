@@ -1,11 +1,11 @@
 import enum
 
-from sqlalchemy import Column, String, Boolean, ForeignKey, Float, Enum
+from sqlalchemy import Column, String, Integer, ForeignKey, Enum, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.dialects.postgresql import UUID
 
 from .base import PkBase
+from .profile import Profile
 
 
 class TaskTypeEnum(str, enum.Enum):
@@ -17,36 +17,39 @@ class TaskTypeEnum(str, enum.Enum):
 
 
 class Lesson(PkBase):
-    """Lesson model"""
-    __tablename__ = 'lesson'
+    __tablename__ = "lesson"
 
-    user_id = Column(UUID(as_uuid=True), ForeignKey('profile.id'), nullable=False)
-    score = Column(Float, default=0.0)  # Total score for the lesson
-
-    user = relationship("Profile", back_populates="lessons")
-    tasks = relationship("Task", back_populates="lesson")  # Define relationship here
+    profile_id = Column(ForeignKey('profile.id'), nullable=False)
+    profile = relationship("Profile", back_populates="lessons")
+    tasks = relationship("Task", back_populates="lesson", cascade="all, delete-orphan")
+    result = Column(JSON, nullable=True)  # Stores user's results (e.g., {"task_id": {"correct": True}})
+    total_score = Column(Integer, default=0)
 
     @hybrid_property
-    def grade(self):
-        if not self.tasks:
-            return 0.0
+    def score(self):
+        return self.total_score
 
-        correct_tasks = sum(1 for task in self.tasks if task.correct)
-        return correct_tasks / len(self.tasks) * 100
+    @score.expression
+    def score(cls):
+        return cls.total_score
 
-    def calculate_grade(self):
-        """Calculate and update the lesson grade."""
-        self.score = self.grade
+    def update_score(self):
+        if self.result:
+            self.total_score = sum([1 for task_result in self.result.values() if task_result["correct"]])
 
 
 class Task(PkBase):
-    """Base Task model"""
-    __tablename__ = 'task'
+    __tablename__ = "task"
 
-    lesson_id = Column(UUID(as_uuid=True), ForeignKey('lesson.id'), nullable=False)
+    lesson_id = Column(ForeignKey('lesson.id'), nullable=False)
+    lesson = relationship("Lesson", back_populates="tasks")
     type = Column(Enum(TaskTypeEnum), nullable=False)
     question = Column(String, nullable=False)
-    answer = Column(String, nullable=False)
-    correct = Column(Boolean, nullable=False, default=False)
+    options = Column(JSON, nullable=True)  # Stores options for MCQ, fill-in, etc.
+    pairs = Column(JSON, nullable=True)  # Stores matching pairs for matching tasks
+    sentence = Column(String, nullable=True)  # Stores sentence for rearrange task
+    correct_answer = Column(Integer, nullable=True)  # Stores index of correct answer for MCQ, fill-in
+    words = Column(JSON, nullable=True)  # Stores words for rearrange task
 
-    lesson = relationship("Lesson", back_populates="tasks")
+
+Profile.lessons = relationship("Lesson", order_by=Lesson.id, back_populates="profile")
