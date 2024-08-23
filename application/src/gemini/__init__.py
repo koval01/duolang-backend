@@ -44,7 +44,10 @@ class Gemini:
 
         prompt_text = self.prompts.lang[l_mode]
 
-        response = self.model.generate_content(prompt_text)
+        response = self.model.generate_content(prompt_text, generation_config={
+            "max_output_tokens": 2048,
+            "temperature": .85
+        })
         parsed = self._extract_json(response.text)
 
         return Lesson(**parsed)
