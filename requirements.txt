@@ -5,6 +5,7 @@ aiogram==3.10.0
 fastapi[standard]==0.112.1
 pydantic==2.8.2
 pydantic-settings==2.4.0
+asgi-correlation-id==4.3.2
 
 # FastAPI and Aiogram integration
 aiogram-fastapi-server==0.1.2

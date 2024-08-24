@@ -4,6 +4,8 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from asgi_correlation_id import CorrelationIdMiddleware
+
 from application.src.middleware import NodeMiddleware, ProcessTimeMiddleware
 
 from fastapi_async_sqlalchemy import SQLAlchemyMiddleware
@@ -61,6 +63,11 @@ def create_app():
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
+    )
+
+    app.add_middleware(
+        CorrelationIdMiddleware,  # type: ignore[no-untyped-call]
+        header_name='X-Fast-Request-ID'
     )
 
     app.add_middleware(NodeMiddleware)  # type: ignore[no-untyped-call]
