@@ -19,4 +19,5 @@ class Profile(PkBase):
     visible = Column(Boolean, default=False)
     avatar = Column(String(2048))
 
-    # lessons = relationship('Lesson', back_populates='profile', cascade='all, delete-orphan')
+    # Relationship with Lesson
+    lessons = relationship('Lesson', back_populates='profile', cascade='all, delete-orphan')

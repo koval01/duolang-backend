@@ -1,5 +1,5 @@
 import enum
-from typing import Union, List, Dict, Optional
+from typing import Union, List, Dict
 from pydantic import BaseModel, field_validator, model_validator, RootModel
 
 
@@ -15,7 +15,7 @@ class TranslationTask(BaseModel):
     type: TaskTypeEnum = TaskTypeEnum.translation
     question: str
     direction: str
-    context: Optional[str]
+    context: str | None
     options: List[str]
     answer: int
     level: str

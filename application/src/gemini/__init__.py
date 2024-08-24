@@ -2,7 +2,7 @@ import os
 import re
 import json
 
-from typing import Literal, Optional
+from typing import Literal
 
 import google.generativeai as genai
 from application.src.config import settings
@@ -26,7 +26,7 @@ class Gemini:
         self.prompts: Prompt = Prompt(lang=data_dict)
 
     @staticmethod
-    def _extract_json(text: str) -> Optional[dict]:
+    def _extract_json(text: str) -> dict | None:
         json_pattern = r'```json\s*([\s\S]*?)\s*```'
         match_json = re.search(json_pattern, text, re.DOTALL)
         if match_json:
