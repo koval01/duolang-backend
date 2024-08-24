@@ -9,6 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 class DevSettings(BaseSettings):
     DEBUG: bool = True
     SECRET_KEY: str = "NOT_A_SECRET"
+    ALLOWED_HOSTS: str = "localhost,127.0.0.1,*.trycloudflare.com"
 
     BOT_TOKEN: str
     FRONT_BASE_URL: str

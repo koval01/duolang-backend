@@ -3,6 +3,7 @@ import logging
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 from asgi_correlation_id import CorrelationIdMiddleware
 
@@ -54,7 +55,7 @@ def create_app():
         SQLAlchemyMiddleware,
         db_url=settings.SQLALCHEMY_DATABASE_URI,
         engine_args={  # SQLAlchemy engine example setup
-            "echo": True,
+            "echo": False,
             "pool_pre_ping": True
         },
     )
@@ -64,6 +65,12 @@ def create_app():
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
+    )
+
+    allowed_hosts = settings.ALLOWED_HOSTS.split(",")
+    app.add_middleware(
+        TrustedHostMiddleware,  # type: ignore[no-untyped-call]
+        allowed_hosts=allowed_hosts
     )
 
     app.add_middleware(
