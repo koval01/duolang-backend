@@ -40,9 +40,7 @@ class ProfileORM:
             Profile or list[Profile]: The fetched profile(s) from the database.
         """
         query = select(Profile).where(
-            Profile.telegram == self.web_app_init_data.user.id \
-            if not by_id else \
-            Profile.id == by_id
+            Profile.telegram == self.web_app_init_data.user.id if not by_id else Profile.id == by_id
         )
         result = await db.session.execute(query)
         scalars = result.scalars()

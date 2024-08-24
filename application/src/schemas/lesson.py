@@ -45,7 +45,7 @@ class TranslationTask(BaseModel):
     @field_validator('answer')
     def validate_answer(cls, v, values):
         options = values.data.get('options', [])
-        if (v < 0 or v >= len(options)):
+        if v < 0 or v >= len(options):
             raise ValueError("Answer index must be within the range of the options list.")
         return v
 
@@ -68,7 +68,7 @@ class FillInTask(BaseModel):
     @field_validator('answer')
     def validate_answer(cls, v, values):
         options = values.data.get('options', [])
-        if (v < 0 or v >= len(options)):
+        if v < 0 or v >= len(options):
             raise ValueError("Answer index must be within the range of the options list.")
         return v
 
@@ -98,7 +98,7 @@ class MultipleChoiceTask(BaseModel):
     @field_validator('answer')
     def validate_answer(cls, v, values):
         options = values.data.get('options', [])
-        if (v < 0 or v >= len(options)):
+        if v < 0 or v >= len(options):
             raise ValueError("Answer index must be within the range of the options list.")
         return v
 

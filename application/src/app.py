@@ -19,6 +19,7 @@ from .bot import bot, bot_routers
 from .api.api import api_router
 
 
+# noinspection PyShadowingNames
 async def on_startup(bot: Bot, base_url: str):
     await bot.set_webhook(f"{settings.BACK_BASE_URL}/webhook")
     await bot.set_chat_menu_button(

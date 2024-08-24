@@ -39,4 +39,4 @@ async def get_profile_by_id(request: Request, profile_id: UUID) -> ProfileItemDi
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
 
     # Return the profile details in the response model
-    return ProfileItemDisplay.from_orm(profile)
+    return ProfileItemDisplay.model_validate(profile)

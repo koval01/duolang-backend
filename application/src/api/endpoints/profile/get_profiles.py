@@ -43,5 +43,5 @@ async def get_profiles(request: Request) -> List[ProfileItemDisplay]:
 
     # Return the list of profiles, each represented by a ProfileItem schema
     return [
-        ProfileItemDisplay.from_orm(row) for row in profiles
+        ProfileItemDisplay.model_validate(row) for row in profiles
     ]

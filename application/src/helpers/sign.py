@@ -9,7 +9,7 @@ class CustomHasher:
         self.prime2 = 37
         self.prime3 = 41
         self.prime4 = 43
-        self.sbox = [
+        self.s_box = [
             0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5,
             0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76
         ]
@@ -46,7 +46,7 @@ class CustomHasher:
             buffer[(i + 2) % self.buffer_size] = (
                 (buffer[(i + 2) % self.buffer_size] + ord(input_str[i]) * self.prime3)
                 & 0xFF
-            ) ^ self.sbox[i % len(self.sbox)]
+            ) ^ self.s_box[i % len(self.s_box)]
             dynamic_key = (dynamic_key * self.prime2) & 0xFF
 
         return buffer
@@ -64,8 +64,8 @@ class CustomHasher:
                     (buffer[i] << (i % 8)) | (buffer[i] >> (8 - (i % 8)))
                 ) & 0xFF
                 # XOR with dynamic S-box and key
-                buffer[i] ^= buffer[(i + self.prime1) % self.buffer_size] ^ self.sbox[
-                    (i + self.prime4) % len(self.sbox)
+                buffer[i] ^= buffer[(i + self.prime1) % self.buffer_size] ^ self.s_box[
+                    (i + self.prime4) % len(self.s_box)
                 ]
                 buffer[i] = (
                     (buffer[i] + buffer[(i * 5 + _r) % self.buffer_size]) * self.prime1
@@ -79,7 +79,7 @@ class CustomHasher:
         :param buffer: The buffer to transform.
         """
         for i in range(len(buffer)):
-            buffer[i] = self.sbox[buffer[i] % len(self.sbox)] ^ buffer[
+            buffer[i] = self.s_box[buffer[i] % len(self.s_box)] ^ buffer[
                 (i * 7) % self.buffer_size
             ]
             buffer[i] ^= buffer[(i + self.prime3) % self.buffer_size]

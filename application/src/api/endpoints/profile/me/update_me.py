@@ -51,4 +51,4 @@ async def update_me(request: Request, _: ProfileItemUpdate) -> ProfileItemDispla
     updated_profile = await _orm.update_user(body)
 
     # Return the updated profile details in the response model
-    return ProfileItemDisplay.from_orm(updated_profile)
+    return ProfileItemDisplay.model_validate(updated_profile)
