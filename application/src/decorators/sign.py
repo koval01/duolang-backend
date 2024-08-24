@@ -3,7 +3,7 @@ from fastapi.logger import logger
 from functools import wraps
 
 from application.src.config import settings
-from application.src.helpers.sign import CustomHasher
+from application.src.helpers import CustomHasher
 
 app = FastAPI()
 

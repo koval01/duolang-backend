@@ -4,6 +4,8 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from application.src.middleware import NodeMiddleware, ProcessTimeMiddleware
+
 from fastapi_async_sqlalchemy import SQLAlchemyMiddleware
 
 from aiogram_fastapi_server import SimpleRequestHandler, setup_application
@@ -54,12 +56,15 @@ def create_app():
         },
     )
     app.add_middleware(
-        CORSMiddleware,
+        CORSMiddleware,  # type: ignore[no-untyped-call]
         allow_origins=[settings.FRONT_BASE_URL],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    app.add_middleware(NodeMiddleware)  # type: ignore[no-untyped-call]
+    app.add_middleware(ProcessTimeMiddleware)  # type: ignore[no-untyped-call]
 
     # Add bot and dispatcher to application
     SimpleRequestHandler(
