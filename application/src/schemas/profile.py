@@ -23,6 +23,9 @@ class ProfileItemDisplay(ProfileItemUpdate):
     telegram: Optional[int] = None
     avatar: Optional[str] = None
 
+    class Config:
+        from_attributes = True
+
 
 class ProfileItemCreate(BaseModel):
     telegram: int

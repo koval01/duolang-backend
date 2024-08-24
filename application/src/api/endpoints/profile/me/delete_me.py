@@ -1,9 +1,6 @@
 from aiogram.utils.web_app import WebAppInitData
 from fastapi import APIRouter, Request
-from fastapi_async_sqlalchemy import db
-from sqlalchemy import delete
-
-from application.src.models import Profile
+from application.src.orm import ProfileORM
 from application.src.schemas import ResultBody
 
 router = APIRouter()
@@ -11,12 +8,28 @@ router = APIRouter()
 
 @router.delete("/")
 async def delete_me(request: Request) -> ResultBody:
+    """
+    API endpoint to delete the current user's profile.
+
+    This endpoint deletes the profile associated with the current user.
+    It returns a success status indicating whether the deletion was successful.
+
+    Args:
+        request (Request): The incoming request object containing WebApp initialization data.
+
+    Returns:
+        ResultBody: A response model indicating the success of the deletion operation.
+    """
+    # Extract WebApp initialization data from the request's state
     web_app_init_data: WebAppInitData = request.state.web_app_init_data
 
-    query = delete(Profile).where(Profile.telegram == web_app_init_data.user.id)
-    result = await db.session.execute(query)
-    await db.session.commit()
+    # Create an instance of ProfileORM using the initialization data
+    _orm = ProfileORM(web_app_init_data)
 
+    # Attempt to delete the user's profile
+    result = await _orm.delete_user()
+
+    # Return the result of the deletion operation
     return ResultBody(
-        success=True if result else False
+        success=result
     )

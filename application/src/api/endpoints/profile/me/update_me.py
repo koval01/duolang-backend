@@ -1,13 +1,7 @@
 from aiogram.utils.web_app import WebAppInitData
-
 from fastapi import APIRouter, HTTPException, Request, status
-from fastapi_async_sqlalchemy import db
-
 from pydantic import ValidationError
-
-from sqlalchemy import select, update
-
-from application.src.models import Profile
+from application.src.orm import ProfileORM
 from application.src.schemas import ProfileItemUpdate, ProfileItemDisplay
 
 router = APIRouter()
@@ -15,36 +9,46 @@ router = APIRouter()
 
 @router.put("/")
 async def update_me(request: Request, _: ProfileItemUpdate) -> ProfileItemDisplay:
+    """
+    API endpoint to update the current user's profile.
+
+    This endpoint allows the current user to update their profile information.
+    The updated profile is returned upon successful update.
+
+    Args:
+        request (Request): The incoming request object containing WebApp initialization data.
+        _ (ProfileItemUpdate): Placeholder for the request body, validated later.
+
+    Returns:
+        ProfileItemDisplay: A response model containing the updated profile details.
+
+    Raises:
+        HTTPException:
+            - If the request body is invalid (400).
+            - If the user's profile is not found (404).
+    """
+    # Extract WebApp initialization data from the request's state
     web_app_init_data: WebAppInitData = request.state.web_app_init_data
 
     # Validate request body
     try:
         body = ProfileItemUpdate(**await request.json())
     except ValidationError as _:
+        # Raise a 400 Bad Request error if the request body is not valid
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid request body")
 
-    query = select(Profile).where(Profile.telegram == web_app_init_data.user.id)
-    result = await db.session.execute(query)
-    profile = result.scalars().first()
+    # Create an instance of ProfileORM using the initialization data
+    _orm = ProfileORM(web_app_init_data)
 
+    # Fetch the user's profile from the database
+    profile = await _orm.fetch_user()
+
+    # If the profile does not exist, raise a 404 Not Found error
     if not profile:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User's profile not found")
 
-    query = (
-        update(Profile)
-        .where(Profile.telegram == web_app_init_data.user.id)
-        .values(**body.model_dump(exclude_none=True))
-        .returning(Profile)
-    )
-    result = await db.session.execute(query)
-    updated_profile = result.scalars().first()
-    await db.session.commit()
+    # Update the user's profile with the new data
+    updated_profile = await _orm.update_user(body)
 
-    return ProfileItemDisplay(
-        id=updated_profile.id,
-        telegram=updated_profile.telegram,
-        createdAt=updated_profile.createdAt,
-        displayName=updated_profile.displayName,
-        visible=updated_profile.visible,
-        avatar=updated_profile.avatar
-    )
+    # Return the updated profile details in the response model
+    return ProfileItemDisplay.from_orm(updated_profile)
