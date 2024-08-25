@@ -1,3 +1,5 @@
+import uuid
+
 from pydantic import BaseModel
 from typing import List, Dict, Union
 from typing_extensions import Literal
@@ -32,4 +34,5 @@ class RearrangeAnswer(BaseTaskAnswer):
 
 
 class UserAnswers(BaseModel):
+    id: uuid.UUID
     answers: List[Union[TranslationAnswer, FillInAnswer, MultipleChoiceAnswer, MatchingAnswer, RearrangeAnswer]]
