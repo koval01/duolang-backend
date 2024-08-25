@@ -2,6 +2,8 @@ import enum
 from typing import Union, List, Dict
 from pydantic import BaseModel, field_validator, model_validator, RootModel
 
+from application.src.models import Lesson as LessonModel
+
 
 class TaskTypeEnum(str, enum.Enum):
     translation = "translation"
@@ -179,7 +181,13 @@ class Lesson(BaseModel):
 
     @model_validator(mode="before")
     def validate_tasks(cls, values):
-        tasks = values.get('tasks', [])
+        if isinstance(values, LessonModel):
+            tasks = values.tasks
+        else:
+            tasks = values.get('tasks', [])
         if not tasks:
             raise ValueError("There must be at least one task in a lesson.")
         return values
+
+    class Config:
+        from_attributes = True
