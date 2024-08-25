@@ -7,8 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 
 from alembic import context
 
-from src.config import settings
-from src.models.base import PkBase
+from application.src.config import settings
+from application.src.models.base import PkBase
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
