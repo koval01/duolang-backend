@@ -67,7 +67,7 @@ def create_app():
         allow_headers=["*"],
     )
 
-    allowed_hosts = settings.ALLOWED_HOSTS.split(",")
+    allowed_hosts = settings.BACK_BASE_URL.split("://")[-1:]
     app.add_middleware(
         TrustedHostMiddleware,  # type: ignore[no-untyped-call]
         allowed_hosts=allowed_hosts
