@@ -38,15 +38,15 @@ class Gemini:
                 return None
         return None
 
-    def execute(self, l_mode: Literal["de-ru"]) -> Lesson:
+    async def execute(self, l_mode: Literal["de-ru"]) -> Lesson:
         if l_mode not in self.prompts.lang:
             raise ValueError(f"Invalid language mode: {l_mode}")
 
         prompt_text = self.prompts.lang[l_mode]
 
-        response = self.model.generate_content(prompt_text, generation_config={
+        response = await self.model.generate_content_async(prompt_text, generation_config={
             "max_output_tokens": 2048,
-            "temperature": .85
+            "temperature": .75
         })
         parsed = self._extract_json(response.text)
 
